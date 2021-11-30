@@ -3,8 +3,15 @@ import 'package:login_demo/screens/login_screen.dart';
 import 'package:login_demo/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var success = prefs.getBool('success');
+
+  print(success);
+
+
+  runApp(MaterialApp(home: success == null ? LoginScreen() : ProfileScreen()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,43 +25,8 @@ class MyApp extends StatelessWidget {
       color: Colors.white,
 
 
-      home: LoadPage(),
+      home: LoginScreen(),
     );
   }
 }
 
-class LoadPage extends StatefulWidget {
-
-
-
-
-  @override
-  LoadPageState createState() => LoadPageState();
-}
-
-class LoadPageState extends State {
-  var newLaunch;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-    loadNewLaunch();
-  }
-
-  loadNewLaunch() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      bool _newLaunch = ((prefs.getBool('newLaunch') ?? true));
-      newLaunch = _newLaunch;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return newLaunch ? LoginScreen() : ProfileScreen();
-  }
-
-
-}

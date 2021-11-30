@@ -1,7 +1,9 @@
 
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_demo/api/api.dart';
+import 'package:login_demo/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -12,25 +14,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Future<bool> _success;
-  late Future<int> _id;
-  late Future<String> _name;
-  late Future<int> _phone;
-  late Future<String> _imge;
-  late Future<String> _token;
-
-  get rsp => null;
-  Future<void> _Savedata() async {
-    final SharedPreferences prefs = await _prefs;
-    prefs.setBool('_success', rsp.containsKey('success'));
-    prefs.setInt('_id', rsp['data']['id']);
-    prefs.setString('_name', rsp['data']['name']);
-    prefs.setInt('_int', rsp['data']['phone']);
-    prefs.setString('_imge', rsp['data']['imge']);
-    prefs.setString('_token', rsp['data']['token']);
-
-  }
+  void _saveJsonToSharedPreference(api) =>
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setString('user', jsonEncode(api));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext ctx) =>
+                ProfileScreen()));
+      }
+      );
 
 
   bool remember = false;
@@ -38,15 +29,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   String message = '';
-  String message1 = 'sai thong tin';
+
+
+
 
   @override
-  void dispose(){
+  void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-
   }
 
   @override
@@ -82,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     height: 300,
+
                     decoration: BoxDecoration(
                         color: Color(0xff404F66),
                         borderRadius: BorderRadius.only(
@@ -91,13 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   ),
                   Positioned(
-                    bottom: 30,
+                      bottom: 30,
                       right: 15,
 
                       child: RotatedBox(
                         quarterTurns: 1,
-                        child: Text('LOGIN',style:
-                        TextStyle(fontSize: 70,color: Color(0xff46546B)),),))
+                        child: Text('LOGIN', style:
+                        TextStyle(fontSize: 70, color: Color(0xff46546B)),),))
 
 
                 ],
@@ -110,8 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       child: RotatedBox(
                         quarterTurns: 1,
-                        child: Text('NOW',style:
-                        TextStyle(fontSize: 70,color: Color(0xffF7F7F7)),),)),
+                        child: Text('NOW', style:
+                        TextStyle(fontSize: 70, color: Color(0xffF7F7F7)),),)),
                   Container(
                     child: Column(
                       children: [
@@ -123,10 +117,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                               contentPadding:
                               EdgeInsets.symmetric(vertical: 20),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              floatingLabelBehavior: FloatingLabelBehavior
+                                  .always,
 
                               labelText: "Your Email",
-                              labelStyle: TextStyle(color: Colors.black,fontSize: 20),
+                              labelStyle: TextStyle(
+                                  color: Colors.black, fontSize: 20),
                               hintText: "Enter your your Email",
 
                             ),
@@ -145,7 +141,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                               contentPadding:
                               EdgeInsets.symmetric(vertical: 20),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              floatingLabelBehavior: FloatingLabelBehavior
+                                  .always,
 
 
                               hintText: "Password",
@@ -153,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Colors.black
                               ),
                               suffixIcon: IconButton(
-                                  onPressed: (){
+                                  onPressed: () {
                                     setState(() {
                                       _passwordVisible = !_passwordVisible;
                                     });
@@ -162,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _passwordVisible
                                         ? Icons.visibility
                                         : Icons.visibility_off,
-                                    color: Theme.of(context).primaryColorDark,
+                                    color: Theme
+                                        .of(context)
+                                        .primaryColorDark,
                                   )),
                               // suffixIcon: GestureDetector(
                               //   child: Icon(
@@ -187,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                                 },
                               ),
-                              Text("Remember",style: TextStyle(
+                              Text("Remember", style: TextStyle(
                                 fontSize: 15,
                               )),
                               Spacer(),
@@ -199,7 +198,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               )
-
                             ],
                           ),
                         ),
@@ -215,64 +213,60 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 250,
                 child: TextButton(
                   onPressed: () async {
-
                     var loginkey = emailController.text;
                     var password = passwordController.text;
-                    var rsp = await LoginUser(loginkey, password);
-                    print(rsp);
-                    if(rsp.containsKey('success')){
+                    var api = await LoginUser(loginkey, password);
+                    print(api);
+                    if (api.containsKey('success')) {
                       setState(() {
-                        _Savedata();
-                          message =rsp['data']['name'];
-                          showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: Text('Login Success'),
-                                content: Text(message),
-                              )
-                          );
-                        });
-                      }
-                    else {
-                      setState(() {
-                        message = 'sai thong tin';
+                        message = api['data']['name'];
+                        showDialog(
+                            context: context,
+                            builder: (_) =>
+                                AlertDialog(
+                                  title: Text('Login Success'),
+                                  content: Text(message),
+                                )
+                        );
+
+                        if (api['success']) {
+                          _saveJsonToSharedPreference(api['data']);
+                        }
                       });
                     }
-                         },
-                  child: Text('LOG IN',style: TextStyle(
+                  },
+                  child: Text('LOG IN', style: TextStyle(
                     color: Colors.white,
                     fontSize: 25,
                   ),),
                 ),
               ),
               SizedBox(height: 10,),
-              Text(message,style: TextStyle(color: Colors.red,
-              fontSize: 20),
+              Text(message, style: TextStyle(color: Colors.red,
+                  fontSize: 20),
               ),
               SizedBox(height: 10,),
               Padding(
                 padding: const EdgeInsets.only(top: 80),
                 child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Text(
-                    "Don’t have an account? ",
-                  style: TextStyle(fontSize: 15),
-                ),
-                GestureDetector(
-                onTap: () {
-                },
-                child: Text(
-                "Sign Up",
-                style: TextStyle(
-                fontSize: 17,
-                color: Colors.red),
-                ),
-                ),
-                ],
+                      "Don’t have an account? ",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.red),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
 
 
             ],
@@ -281,6 +275,14 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 }
+
+
+
+
+
+
+
+
+
 
