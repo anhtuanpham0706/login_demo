@@ -13,9 +13,9 @@ class Categories extends StatelessWidget {
       // {"icon": "lib/assets/icons/Setting.svg", "text": "Setting"},
     ];
     return Padding(
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.only(left: 20, top: 20, right: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(
           categories.length,
@@ -32,12 +32,12 @@ class Categories extends StatelessWidget {
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
-    Key? key,
-    required this.icon,
-    required this.text,
+    Key key,
+     this.icon,
+     this.text,
   }) : super(key: key);
 
-  final String? icon, text;
+  final String icon, text;
 
 
   @override
@@ -45,7 +45,7 @@ class CategoryCard extends StatelessWidget {
     return GestureDetector(
 
       child: SizedBox(
-        width: 190,
+        width: 170,
         height: 170,
         child: Column(
           children: [
@@ -61,12 +61,12 @@ class CategoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      child: SvgPicture.asset(icon!),
+                      child: SvgPicture.asset(icon),
                     height: 80,
                     width: 80,
                   ),
                   SizedBox(height: 5,),
-                  Text(text!, textAlign: TextAlign.center,
+                  Text(text, textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20,color: Colors.white,
                         ),)
                 ],

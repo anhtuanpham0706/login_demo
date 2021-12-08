@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:login_demo/screens/login_screen.dart';
 import 'package:login_demo/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'model/User.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  var success = prefs.getBool('success');
+  var login = prefs.getBool('login');
 
-  print(success);
+  print(login);
 
 
-  runApp(MaterialApp(home: success == null ? LoginScreen() : ProfileScreen()));
+  runApp(MaterialApp(home: login == null ? LoginScreen() : ProfileScreen()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,8 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       color: Colors.white,
-
-
       home: LoginScreen(),
     );
   }

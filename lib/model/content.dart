@@ -4,9 +4,9 @@ class Category {
   final String icon;
   const Category(
       {
-        required this.id,
-        required this.content,
-        required this.icon
+         this.id,
+         this.content,
+         this.icon
       }
       );
 

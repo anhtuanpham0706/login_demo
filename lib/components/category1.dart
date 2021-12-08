@@ -30,12 +30,12 @@ class Categories1 extends StatelessWidget {
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
-    Key? key,
-    required this.icon,
-    required this.text,
+    Key key,
+     this.icon,
+     this.text,
   }) : super(key: key);
 
-  final String? icon, text;
+  final String icon, text;
 
 
   @override
@@ -59,12 +59,12 @@ class CategoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    child: SvgPicture.asset(icon!),
+                    child: SvgPicture.asset(icon),
                     height: 80,
                     width: 80,
                   ),
                   SizedBox(height: 5,),
-                  Text(text!, textAlign: TextAlign.center,
+                  Text(text, textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20,color: Colors.white,
                         ),)
                 ],

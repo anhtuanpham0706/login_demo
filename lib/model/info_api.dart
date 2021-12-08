@@ -1,9 +1,9 @@
 class Data {
-  late String phone;
-  late String name;
-  late String avatar;
+   String phone;
+   String name;
+   String avatar;
 
-  Data({required this.phone, required this.name, required this.avatar});
+  Data({ this.phone,  this.name,  this.avatar});
 
   Data.fromJson(Map<String, dynamic> json) {
     phone = json['phone'];

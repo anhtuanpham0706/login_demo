@@ -6,7 +6,7 @@ import 'package:login_demo/model/content.dart';
 
 class CategoryItem extends StatelessWidget {
   Category category;
-  CategoryItem({required this.category});
+  CategoryItem({ this.category});
 
   @override
   Widget build(BuildContext context) {
