@@ -17,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences.getInstance().then((prefs) {
         prefs.setString('user', jsonEncode(api));
         prefs.setBool('login', true);
-
       }
       );
 
@@ -27,12 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   String message = '';
-
-
-
-
   @override
   void dispose() {
     emailController.dispose();

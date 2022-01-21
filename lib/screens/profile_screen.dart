@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:login_demo/api/api.dart';
 import 'package:login_demo/components/category.dart';
@@ -31,6 +32,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   final ProfileBloc _bloc = ProfileBloc();
 
+  void convertbase64(PickedFile _imageFile) {
+
+    File file = File(_imageFile.path);
+    List<int> bytes = file.readAsBytesSync();
+    String base64 = base64Encode(bytes);
+    update_avatar(user.token_user, base64);
+    print('update avatar');
+  }
+
+
 
 
   void _getJsonFromSharedPreference()  {
@@ -44,20 +55,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     });
   }
+  void dispose() {
+    _bloc.close();
+    super.dispose();
 
+  }
 
-
-
-  @override
   void initState() {
-    super.initState();
+    _bloc.listen((state) {
+      if(state is TakePhotoState)
+        _imageFile = state.imageFile;
+    });
     _getJsonFromSharedPreference();
+    super.initState();
 
   }
 
 
+
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //
+  // }
+
+
   @override
   Widget build(BuildContext context) {
+    print('Loading all');
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff404F66),
@@ -136,26 +163,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 clipBehavior: Clip.none,
                                 children: [
                                   Container(
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 60.0,
-                                      backgroundImage: _imageFile == null
+                                    child: BlocBuilder(
+                                      cubit: _bloc,
+                                      buildWhen: (oldState, newState) => newState is TakePhotoState,
+                                      builder: (context, state) {
+                                        print('Loading avatar');
+                                        return CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          radius: 60.0,
+                                          backgroundImage: _imageFile == null
+                                              ? NetworkImage("https://dev.ecom.advn.vn/${user.image}") as ImageProvider
+                                              :FileImage(File(_imageFile.path)),
 
-                                        ? NetworkImage("https://dev.ecom.advn.vn/${user.image}") as ImageProvider
-                                         :FileImage(File(_imageFile.path)),
+                                        );
 
-
-                                      // NetworkImage("https://dev.ecom.advn.vn/${user.image}")
-                                      // child: ClipOval(
-                                      //
-                                      //   child: FadeInImage.assetNetwork(placeholder: 'lib/assets/image/bundo-kim.png',
-                                      //     image: 'https://dev.ecom.advn.vn/${user.image}',
-                                      //     fit: BoxFit.cover,
-                                      //     width: 140,
-                                      //     height: 140,
-                                      //   ),
-                                      //   ),
-                                      ),
+                                      },
+                                    ),
 
                                     ),
                                   Positioned(
@@ -249,15 +272,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             TextButton.icon(
               icon: Icon(Icons.camera),
-              onPressed: () {
-                   takePhoto(ImageSource.camera);
+              onPressed: () async {
+                   takePhoto(ImageSource.camera, user.token_user);
+                   Navigator.pop(context);
+
               },
               label: Text("Camera"),
             ),
             TextButton.icon(
               icon: Icon(Icons.image),
-              onPressed: () {
-                takePhoto(ImageSource.gallery);
+              onPressed: ()  {
+                takePhoto(ImageSource.gallery, user.token_user);
+                Navigator.pop(context);
+
               },
               label: Text("Gallery"),
             ),
@@ -266,7 +293,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  void takePhoto(ImageSource camera) => _bloc.add(TakePhotoEvent(source));
+  void takePhoto(ImageSource source, String user) {
+    _bloc.add(TakePhotoEvent(source, user));
+  }
 
 
 
@@ -276,10 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //     final pickedFile = await _picker.getImage(
   //         source: source);
   //     setState(() {
-  //       _imageFile = pickedFile;
-  //       File file = File(pickedFile.path);
-  //       List<int> bytes = file.readAsBytesSync();
-  //       String base64 = base64Encode(bytes);
+
   //       update_avatar(user.token_user, base64);
   //     });
   //   } else if(status.isGranted){

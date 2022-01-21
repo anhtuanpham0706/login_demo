@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:login_demo/api/api.dart';
 import 'package:login_demo/model/User.dart';
 import 'dart:async';
 import 'dart:core';
@@ -13,7 +17,8 @@ abstract class ProfileEvent {
 }
 class TakePhotoEvent extends ProfileEvent {
   final ImageSource source;
-const TakePhotoEvent(this.source);
+  final String user;
+const TakePhotoEvent(this.source, this.user);
 }
 
 class ProfileState {
@@ -23,6 +28,7 @@ const ProfileState();
 
 class TakePhotoState extends ProfileState {
   final PickedFile imageFile;
+
   const TakePhotoState(this.imageFile);
 }
 
@@ -41,12 +47,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
   Stream<ProfileState> _takephoto(TakePhotoEvent event) async* {
       final ImageSource source = event.source;
+      final String user = event.user;
 
       PickedFile imageFile;
       final ImagePicker _picker = ImagePicker();
       final pickedFile = await _picker.getImage(
           source: source);
       imageFile = pickedFile;
+      File file = File(pickedFile.path);
+      List<int> bytes = file.readAsBytesSync();
+      String base64 = base64Encode(bytes);
+      update_avatar(user, base64);
+
+
       yield TakePhotoState(imageFile);
 
   }

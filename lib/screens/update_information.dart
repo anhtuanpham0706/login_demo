@@ -43,24 +43,22 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
       }
       );
-
-
   @override
   void initState() {
     super.initState();
     _getJsonFromSharedPreference();
-
   }
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.blue),
-            onPressed: () => Navigator.pop(context),
+            // onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          ),
         ),
         backgroundColor: Color(0xff46546B),
           toolbarHeight:MediaQuery.of(context).size.height/10,
@@ -86,7 +84,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     EdgeInsets.symmetric(vertical: 15),
                     floatingLabelBehavior: FloatingLabelBehavior
                         .always,
-
                     labelText: "Name",
                     labelStyle: TextStyle(
                         color: Colors.black, fontSize: 20),
@@ -172,8 +169,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
                       ],
                     ),
                   ),
-
-
                 ],
               ),
             ),
@@ -188,7 +183,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     var name = nameController.text;
                     var phone = phoneController.text;
                     var address = addressController.text;
-
                    var api = await update_user(user.token_user, name, phone, address);
                    if(api['success']){
                      _saveJsonToSharedPreference(api['data']);
